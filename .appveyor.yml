@@ -1,0 +1,30 @@
+# reference: https://github.com/zhang-ray/easy-voice-call/blob/master/.appveyor.yml
+
+image: Visual Studio 2015
+
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+before_build:
+  - echo %APPVEYOR_BUILD_FOLDER%
+  - mkdir ..\qt00-build\ && cd ..\qt00-build\
+  - cmake -Wno-dev %APPVEYOR_BUILD_FOLDER%
+
+configuration:
+  - Release
+
+build:
+  project: ..\qt00-build\qt00.sln
+  # parallel: true
+  # verbosity: quiet
+
+
+after_build:
+  - mkdir %APPVEYOR_BUILD_FOLDER%\artifacts
+  - move .\Release\qt00.exe  %APPVEYOR_BUILD_FOLDER%\artifacts\qt00.exe
+  - C:\Qt\5.11\msvc2015\bin\windeployqt.exe  %APPVEYOR_BUILD_FOLDER%\artifacts\qt00.exe
+  - tree
+
+
+artifacts:
+  - path: artifacts
